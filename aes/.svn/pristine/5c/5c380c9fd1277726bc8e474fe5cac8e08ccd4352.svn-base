@@ -1,0 +1,326 @@
+/*=============================================
+=                  General                    =
+=============================================*/
+legend {
+	padding: 0 4px;
+	margin-bottom: auto;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+fieldset {
+	border: 1px solid silver;
+	border-radius: 4px;
+	padding: 10px 5px;
+}
+
+fieldset label {
+	font-size: 1.2rem;
+	font-weight: normal;
+}
+
+select {
+	height: auto !important;
+}
+
+.fontSize {
+	font-size: 12px;
+}
+
+.separador {
+	border-top: 1px solid #5688d4;
+}
+
+.cuadroInformacion {
+    border-bottom: none;
+    width: auto;
+    margin-bottom: 0px;
+}
+
+.fondoFormulario{
+    background-color: #DEF2FB;
+    margin-top: 10px;  
+}
+
+.bordesRedondo5{
+    border-radius: 5px;
+}
+
+.centrarVertical {
+    display: flex;
+    align-items: center;
+}
+
+.loginOver{
+	overflow: auto;
+}
+
+.container_12{
+		margin-left:0;
+		margin-right:0;
+        
+        body {
+      		padding:0;
+    	}
+}
+
+.container_16{
+		margin-top:0;
+}
+
+
+@media (min-width: 978px) {
+    .container_12{
+   		width:960px;
+		margin-left:auto;
+		margin-right:auto;
+    }
+}
+
+@media (min-width: 978px) {
+    .container_16{
+		margin-top: 40px;
+    }
+}
+
+.target:hover {
+	color: white;
+	text-decoration: inherit;
+}
+
+.target {
+	color: black;
+	margin-left: 4px;
+    margin-right: 4px;
+    text-decoration: inherit;
+}
+
+.lang_active {
+  font-weight: bold;
+  color: black;
+  text-decoration: inherit;
+}
+
+.cabeceraCanal a {
+	color: #0075bf;
+	font-size: 12px;
+	background: url(../images/bullet_titulo.gif) no-repeat 0 0;
+	font-weight: bold;
+	text-decoration: none;
+	padding-left: 15px;
+	text-align: left;
+}
+
+div#inputLinea1Div.col-xs-12 {
+	padding-left: 4.5%;
+}
+
+/* .form-group{ */
+/* 	overflow: auto; */
+/* } */
+
+/*=============================================
+=                  Botones                    =
+=============================================*/
+.btn-aesa,.btn-aesa:focus {
+	border: 1px solid #bbb;
+	border-radius: 5px;
+	background: linear-gradient(to-bottom, #fff 0%, #e5e5e5 100%);
+	line-height: 1.3;
+	padding: 0 10px 1px;
+	font-weight: bold;
+	color: #5688d4;
+}
+
+/*=============================================
+=                  Cabecera                    =
+=============================================*/
+#contenedor_cabecera {
+	background: url("../images/fondoCabecera.png") repeat left;
+}
+
+#contenedor_cabecera_izq {
+	background: url("../images/EscudoNombre2.png") no-repeat;
+	height: 128px;
+	width: 100%;
+}
+#contenedor_pie {
+	background: url("../images/FondoAzul.png") repeat left;
+	padding: 0.15em 0em 0em 0.625em;
+	margin-top: 20px;
+	background-color: #234973;
+	height: 26px;
+	position: fixed;
+	left: 0;
+	bottom: 0;	
+	width: 100%;
+}
+.idiomas {
+	background-color: #cceeff;
+	padding: 0 10px;
+	text-align: right;
+}
+
+.breadcrumb {
+	background: none;
+	padding: 8px 5px;
+	font-size: .8em;
+}
+
+.breadcrumb>li+li::before {
+	content: '>';
+	padding: 0;
+	color: black !important;
+}
+
+.required {
+	position: absolute;
+	float: right;
+	padding: 0 5px;
+}
+
+
+#modalDireccion fieldset {
+	border: none;
+}
+
+.modal-header {
+	background-color: #ccc;
+	border: 1px solid black;
+}
+
+.modal-title {
+	color: black;
+}
+
+/*=============================================
+=                    Pie                      =
+=============================================*/
+footer {
+    background: #ececec url(../images/fn-footer.png) repeat-x center top;
+    font-size: 0.75em;
+    padding: 0.75em 1.5em;
+    clear: both;
+    
+}
+
+    footer .logosw3 a {
+        float: right;
+    }
+
+    footer .logosw3 img {
+        float: right;
+    }
+
+.altunaMinima{
+	min-height: 700px;
+}
+
+.errores {
+	color: red;
+	padding: 8px 5px;
+	margin-left: 15px;
+	font-size: 1em;
+}
+
+
+/*=============================================
+=             Custom Responsive               =
+=============================================*/
+
+/* Medium devices (desktops, 992px and up) */
+@media ( min-width : 992px) {
+	label {
+		text-align: right;
+	}
+	.form-horizontal .control-label {
+		text-align: right;
+	}
+	.breadcrumb {
+		background: none;
+		padding: 8px 5px;
+		font-size: 1em;
+		color: black !important;
+	}
+	.breadcrumb>li+li::before {
+		padding: 0 5px;
+	}
+}
+
+/*=============================================
+=                Menú lateral                 =
+=============================================*/
+
+#primer_nivel_menu {
+    list-style: none outside none;
+    margin: 0px;
+    padding: 0px;
+}
+
+#primer_enlace_menu {
+      border: 1.09375px solid rgb(207, 207, 207);
+    box-sizing: border-box;
+    color: rgb(121, 114, 88);
+    display: block;
+    text-decoration: none solid rgb(121, 114, 88);
+    width: 100%;
+    background: rgb(233, 230, 219) url("../images/bullet_navPrin02_current.gif") no-repeat scroll 0px 0px / auto padding-box border-box;
+    font: normal normal 400 normal 11px / 15.7143px Verdana, Arial, Helvetica, sans-serif;
+    padding: 0px 20px;
+    padding-top: 2px;
+    padding-bottom: 4px;
+}
+
+#segundo_nivel_menu {
+    text-decoration: none solid rgb(102, 102, 102);
+    width: 100%;
+    background: rgb(242, 241, 233) none repeat scroll 0% 0% / auto padding-box border-box;
+    padding: 0px;
+}
+
+#elemento_seleccionado {
+    font: normal normal 400 normal 14px / 20px Verdana, Arial, Helvetica, sans-serif;
+    list-style: none outside none;
+    margin: 0px 0px 0px 30px;
+    outline: rgb(102, 102, 102) none 0px;
+}
+
+#enlace_seleccionado {
+    box-sizing: border-box;
+    color: rgb(121, 114, 88);
+    display: block;
+    text-decoration: none solid rgb(121, 114, 88);
+    background: rgb(233, 230, 219) url("../images/bullet_navPrin02_current.gif") no-repeat scroll 0px 0px / auto padding-box border-box;
+    border: 1.09375px solid rgb(207, 207, 207);
+    font: normal normal 700 normal 11px / 15.7143px Verdana, Arial, Helvetica, sans-serif;
+    list-style: none outside none;
+    outline: rgb(121, 114, 88) none 0px;
+    padding: 0px 20px;
+    padding-top: 2px;
+    padding-bottom: 4px;
+}
+
+#elemento_no_seleccionado {
+    list-style: none outside none;
+    margin: 0px 0px 0px 30px;
+}
+
+#enlace_no_seleccionado {
+    box-sizing: border-box;
+    color: rgb(121, 115, 89);
+    display: block;
+    text-decoration: none solid rgb(121, 115, 89);
+    background: rgba(0, 0, 0, 0) url("../images/bullet_navPrin03.gif") no-repeat scroll 5px 5px / auto padding-box border-box;
+    border: 1px solid rgb(242, 241, 233);
+    font: normal normal 400 normal 11px / 15.7143px Verdana, Arial, Helvetica, sans-serif;
+    padding: 0px 15px;
+    padding-bottom: 2px;
+}
+
+/* Para los spans con contenido de texto largos como el hash de un documento o la huella digital 
+en validacionFirmas/firmaValida */
+.textoLargo {
+	word-wrap: break-word;
+}
+
+ 

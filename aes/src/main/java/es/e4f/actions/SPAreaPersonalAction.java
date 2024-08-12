@@ -1,0 +1,588 @@
+package es.e4f.actions;
+
+import java.io.IOException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.opensaml.xml.XMLObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+
+import es.clave.sp.AbstractSPServlet;
+import es.e4f.bean.ResponseSAMLBean;
+import es.e4f.bean.security.UsuarioAutenticado;
+import es.e4f.exception.ApplicationException;
+import es.e4f.utils.ConstantesSP;
+import es.e4f.utils.Encryption;
+import es.e4f.utils.SPUtil;
+import eu.eidas.auth.commons.EidasErrorKey;
+import eu.eidas.auth.commons.EidasStringUtil;
+import eu.eidas.auth.commons.attribute.AttributeDefinition;
+import eu.eidas.auth.commons.attribute.AttributeValue;
+import eu.eidas.auth.commons.attribute.AttributeValueMarshaller;
+import eu.eidas.auth.commons.attribute.AttributeValueMarshallingException;
+import eu.eidas.auth.commons.attribute.AttributeValueTransliterator;
+import eu.eidas.auth.commons.attribute.ImmutableAttributeMap;
+import eu.eidas.auth.commons.protocol.IAuthenticationResponse;
+import eu.eidas.auth.commons.protocol.IRequestMessage;
+import eu.eidas.auth.commons.protocol.eidas.LevelOfAssurance;
+import eu.eidas.auth.commons.protocol.eidas.LevelOfAssuranceComparison;
+import eu.eidas.auth.commons.protocol.eidas.SpType;
+import eu.eidas.auth.commons.protocol.eidas.impl.EidasAuthenticationRequest;
+import eu.eidas.auth.commons.protocol.impl.EidasSamlBinding;
+import eu.eidas.auth.commons.protocol.impl.SamlNameIdFormat;
+import eu.eidas.auth.commons.xml.opensaml.OpenSamlHelper;
+import eu.eidas.auth.engine.AbstractProtocolEngine;
+import eu.eidas.auth.engine.ProtocolEngineI;
+import eu.eidas.auth.engine.xml.opensaml.CorrelatedResponse;
+import eu.eidas.auth.engine.xml.opensaml.SAMLEngineUtils;
+import eu.eidas.encryption.exception.MarshallException;
+import eu.eidas.encryption.exception.UnmarshallException;
+import eu.eidas.engine.exceptions.EIDASSAMLEngineException;
+
+
+/**
+ * 
+ */
+public class SPAreaPersonalAction extends AbstractSPServlet {
+
+	private static final long serialVersionUID = -7911651453521376850L;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SPAreaPersonalAction.class);
+
+
+	/**
+	 * Método de acceso al areapersonal con nivel Medio de aseguramiento
+	 * @param model
+	 * @return
+	 * @throws EIDASSAMLEngineException 
+	 * @throws ApplicationException 
+	 */
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+
+		try {
+			this.generateRequestAutentition(request, Boolean.TRUE);
+		} catch (ApplicationException | EIDASSAMLEngineException e) {
+			// TODO Auto-generated catch block
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("E4f/redirectEidas.jsp");
+		dispatcher.forward(request, response);
+
+	}
+
+
+	/**
+	 * Genera el Authnrequest 
+	 * @param model
+	 * @param nivelMedio (false: nivel bajo, true: nivel medio
+	 * @throws EIDASSAMLEngineException
+	 * @throws ApplicationException
+	 */
+	private void generateRequestAutentition( HttpServletRequest request, Boolean nivelMedio) throws EIDASSAMLEngineException, ApplicationException {
+
+		Properties configs = SPUtil.loadSPConfigs();
+
+		System.out.print("generate request " + "\n");
+
+		String providerName = configs.getProperty(ConstantesSP.PROVIDER_NAME);
+		
+		System.out.print("provider name: " + providerName +  "\n");
+
+		ProtocolEngineI protocolEngine = SPUtil.getProtocolEngine();
+
+		String nodeUrl = configs.getProperty(ConstantesSP.SP_DESTINATION);
+		String nodeMetadataUrl = configs.getProperty(ConstantesSP.SP_DESTINATION_METADATA);
+
+		final ImmutableSortedSet<AttributeDefinition<?>> allSupportedAttributesSet = protocolEngine.getProtocolProcessor().getAllSupportedAttributes();
+		List<AttributeDefinition<?>> reqAttrList = new ArrayList<>(allSupportedAttributesSet);
+
+		ImmutableAttributeMap.Builder mapBuilder = ImmutableAttributeMap.builder();
+		Iterator<AttributeDefinition<?>> it = reqAttrList.iterator();
+		while (it.hasNext()) {
+			AttributeDefinition<?> attr = it.next();
+
+			if (ConstantesSP.PARAM_EIDAS_SAML_CODTRAMITE.equals(attr.getNameUri().toString())) {
+				String codTramite = configs.getProperty(ConstantesSP.SP_COD_TRAMITE);
+				addAttributeValues(attr, codTramite, mapBuilder);
+			} else {
+				mapBuilder.put((AttributeDefinition) attr);
+			}
+
+		}
+
+		ImmutableAttributeMap reqAttrMap = mapBuilder.build();
+
+		byte[] token = null;
+
+		// build the request
+		EidasAuthenticationRequest.Builder reqBuilder = new EidasAuthenticationRequest.Builder();
+		reqBuilder.destination(nodeUrl);
+		reqBuilder.providerName(providerName);
+		reqBuilder.requestedAttributes(reqAttrMap);
+
+		if (nivelMedio) {
+			reqBuilder.levelOfAssurance(LevelOfAssurance.SUBSTANTIAL.stringValue());
+		} else {
+			reqBuilder.levelOfAssurance(LevelOfAssurance.LOW.stringValue());
+		}
+
+		reqBuilder.spType(SpType.PUBLIC.toString());
+		reqBuilder.levelOfAssuranceComparison(LevelOfAssuranceComparison.MINIMUM.stringValue());
+		reqBuilder.nameIdFormat(SamlNameIdFormat.UNSPECIFIED.toString());
+		reqBuilder.binding(EidasSamlBinding.EMPTY.getName());
+
+		String metadataUrl = configs.getProperty(ConstantesSP.SP_METADATA_URL);
+		if (metadataUrl != null && !metadataUrl.isEmpty() && SPUtil.isMetadataEnabled()) {
+			reqBuilder.issuer(metadataUrl);
+		}
+
+		reqBuilder.citizenCountryCode("ES");
+
+		IRequestMessage binaryRequestMessage = null;
+
+		try {
+			reqBuilder.id(SAMLEngineUtils.generateNCName());
+			
+			System.out.printf("nodeMetadataUrl: " + nodeMetadataUrl + "\n");
+			
+			binaryRequestMessage = protocolEngine.generateRequestMessage(reqBuilder.build(), nodeMetadataUrl);
+		} catch (EIDASSAMLEngineException e) {
+			LOGGER.error("", e);
+			throw new ApplicationException(ApplicationException.SAML_GENERACION_ERROR, e.getErrorMessage());
+		}
+
+		if (binaryRequestMessage != null) {
+			token = binaryRequestMessage.getMessageBytes();
+		}
+
+		String samlRequestXML = EidasStringUtil.toString(token);
+		String samlRequest = EidasStringUtil.encodeToBase64(token);
+
+		request.setAttribute("samlRequest", samlRequest);
+		request.setAttribute("samlRequestXML", samlRequestXML);
+		request.setAttribute("nodeUrl", nodeUrl);
+		request.setAttribute("autentication", configs.getProperty("autentication"));
+		
+		System.out.println("samlRequest: "  + samlRequest +  "\n");
+		
+		System.out.println("nodeUrl: "  + nodeUrl +  "\n");
+
+	}
+
+
+
+	/**
+	 * @param attr
+	 * @param value
+	 * @param mapBuilder
+	 * @return
+	 */
+	private ImmutableAttributeMap.Builder addAttributeValues(AttributeDefinition attr, String value, ImmutableAttributeMap.Builder mapBuilder) {
+		String attrName = attr.getNameUri().toASCIIString();
+		ArrayList<String> values = new ArrayList<>();
+		values.addAll(getValuesOfAttribute(attrName, value));
+
+		if (!values.isEmpty()) {
+			AttributeValueMarshaller<?> attributeValueMarshaller = attr.getAttributeValueMarshaller();
+			ImmutableSet.Builder<AttributeValue<?>> builder = ImmutableSet.builder();
+			for (final String val : values) {
+				AttributeValue<?> attributeValue = null;
+				try {
+					if (AttributeValueTransliterator.needsTransliteration(val)) {
+						attributeValue = attributeValueMarshaller.unmarshal(val, true);
+					} else {
+						attributeValue = attributeValueMarshaller.unmarshal(val, false);
+					}
+				} catch (AttributeValueMarshallingException e) {
+					throw new IllegalStateException(e);
+				}
+				builder.add(attributeValue);
+			}
+			mapBuilder.put((AttributeDefinition) attr, (ImmutableSet) builder.build());
+		}
+		return mapBuilder;
+	}
+
+
+	/**
+	 * @param attrName
+	 * @param value
+	 * @return
+	 */
+	private List<String> getValuesOfAttribute(String attrName, String value) {
+		ArrayList<String> tmp = new ArrayList<>();
+		tmp.add(value);
+		if (AttributeValueTransliterator.needsTransliteration(value)) {
+			String trValue = AttributeValueTransliterator.transliterate(value);
+			tmp.add(trValue);
+		}
+		return tmp;
+	}
+
+	/**
+	 * Controlador de la respuesta del token SAML
+	 * @param request
+	 * @param sAMLResponse
+	 * @return
+	 * @throws ApplicationException
+	 * @throws UnmarshallException
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  {
+
+		if (request.getSession(false) != null) {
+			request.getSession(false).invalidate();
+		}
+		request.getSession(true);
+		
+		String sAMLResponse = request.getParameter("SAMLResponse");
+
+		// Limpio el contexto de seguridad, por si existiera una anterior
+		SecurityContextHolder.clearContext();
+		SecurityContextHolder.createEmptyContext();
+		
+		RequestDispatcher dispatcher =null;
+
+		// gestiona la respuesta del token SAML
+		ResponseSAMLBean respuesta;
+		try {
+			respuesta = respuestaDatosSAML(sAMLResponse, request, response);
+			// A partir de la respuesta, con los datos de la persona autenticada, crea un Obejeto de UsarioAutenticado
+			// Y lo añade al contexto de seguridad de Spring Security
+			UsuarioAutenticado usuario = this.crearUsuario(respuesta);
+			UsernamePasswordAuthenticationToken usuToken = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+			SecurityContextHolder.getContext().setAuthentication(usuToken);
+			
+			String clave=Encryption.encryptAES(respuesta.getNumIdentificativo().toString(), "clave_secreta_OV");
+			request.setAttribute("ID", clave);
+			
+			HttpSession session = request.getSession();
+			Cookie sessionCookie=new Cookie("JSESSIONID", session.getId() );
+			sessionCookie.setMaxAge(30*60);
+			
+			response.addCookie(sessionCookie);
+			session.setAttribute("autentication", request.getAttribute("autentication"));
+
+		} catch (ApplicationException | UnmarshallException e) {
+			// TODO Auto-generated catch block
+			request.setAttribute("Title","SAML_VALIDATION_ERROR");
+			request.setAttribute("Message", e.getMessage());
+
+			String dateTime= DateTimeFormatter.ofPattern("dd/MM/yy hh:mm:ss").format(LocalDateTime.now());
+			request.setAttribute("Date", dateTime);
+
+			dispatcher = request.getRequestDispatcher("/errorPage.jsp");
+			dispatcher.forward(request, response);
+
+			LOGGER.error(e.getMessage(), e);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		dispatcher = request.getRequestDispatcher("/returnPage.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	/**
+	 * @param sAMLResponse
+	 * @param request
+	 * @return
+	 * @throws ApplicationException
+	 * @throws UnmarshallException
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private ResponseSAMLBean respuestaDatosSAML(String sAMLResponse, HttpServletRequest request, HttpServletResponse response) throws ApplicationException, UnmarshallException, ServletException, IOException {
+
+		//Decodes SAML Response
+		byte[] decSamlToken = EidasStringUtil.decodeBytesFromBase64(sAMLResponse);
+
+		//Obtiene la configuración necesaria para obtener la respuesta del token SAML
+		Properties configs = SPUtil.loadSPConfigs();
+		String metadataUrl = configs.getProperty(ConstantesSP.SP_METADATA_URL);
+
+		//Get SAMLEngine instance
+		IAuthenticationResponse authnResponse = null;
+		String samlUnencryptedResponseXML = null;
+		RequestDispatcher dispatcher =null;
+		
+		try {
+			ProtocolEngineI engine = SPUtil.getProtocolEngine();
+			//validate SAML Token
+			authnResponse = engine.unmarshallResponseAndValidate(decSamlToken, request.getRemoteHost(), 0, 0, metadataUrl);
+
+			// Obtenemos el tokem SAML desencriptado
+			boolean encryptedResponse = SPUtil.isEncryptedSamlResponse(decSamlToken);
+			if (encryptedResponse) {
+				byte[] eidasTokenSAML = checkAndDecryptResponse(decSamlToken, engine);
+				samlUnencryptedResponseXML = EidasStringUtil.toString(eidasTokenSAML);
+			}
+
+		} catch (EIDASSAMLEngineException e) {
+			// Si hay algun error al validar el TOKEN SAML se lanza una excepcion
+			LOGGER.error("", e);
+			if (StringUtils.isEmpty(e.getErrorDetail())) {
+				request.setAttribute("Title","SAML_VALIDATION_ERROR");
+				request.setAttribute("Message", e.getMessage());
+
+				String dateTime= DateTimeFormatter.ofPattern("dd/MM/yy hh:mm:ss").format(LocalDateTime.now());
+				request.setAttribute("Date", dateTime);
+
+				dispatcher = request.getRequestDispatcher("/errorPage.jsp");
+				dispatcher.forward(request, response);
+
+				throw new ApplicationException(ApplicationException.SAML_VALIDACION_ERROR, e.getErrorMessage());
+			} else {
+				request.setAttribute("Title","SAML_VALIDATION_ERROR");
+				request.setAttribute("Message", e.getMessage());
+
+				String dateTime= DateTimeFormatter.ofPattern("dd/MM/yy hh:mm:ss").format(LocalDateTime.now());
+				request.setAttribute("Date", dateTime);
+
+				dispatcher = request.getRequestDispatcher("/errorPage.jsp");
+				dispatcher.forward(request, response);
+
+				throw new ApplicationException(ApplicationException.SAML_VALIDACION_ERROR, e.getErrorDetail());
+			}
+		}
+
+
+		ResponseSAMLBean responseSAMLBean = null;
+		// Si la respuesta obtenida de la validacion y obtencion de la respuesta es incorrecta también se lanza una excepcion
+		if (authnResponse.isFailure()) {
+			if (authnResponse.getStatusMessage() == null || authnResponse.getStatusMessage().isEmpty()) {
+				request.setAttribute("Title","SAML_VALIDATION_ERROR");
+				String dateTime= DateTimeFormatter.ofPattern("dd/MM/yy hh:mm:ss").format(LocalDateTime.now());
+				request.setAttribute("Date", dateTime);
+
+				dispatcher = request.getRequestDispatcher("/errorPage.jsp");
+				dispatcher.forward(request, response);
+
+				throw new ApplicationException(ApplicationException.SAML_RESPONSE_ERROR);
+			} else {
+				request.setAttribute("Title","SAML_VALIDATION_ERROR");
+				request.setAttribute("Message", authnResponse.getStatusMessage());
+
+				String dateTime= DateTimeFormatter.ofPattern("dd/MM/yy hh:mm:ss").format(LocalDateTime.now());
+				request.setAttribute("Date", dateTime);
+
+				dispatcher = request.getRequestDispatcher("/errorPage.jsp");
+				dispatcher.forward(request, response);
+
+				throw new ApplicationException(ApplicationException.SAML_RESPONSE_ERROR, authnResponse.getStatusMessage()); 
+			}
+		} else {
+			// Si la respuesta es válida, obtenemos los parámetros que esperamos y los mapeamos a un objeto de Respuesta
+			responseSAMLBean = this.rellenaRespuestaSaml(authnResponse);
+			responseSAMLBean.setSamlResponse(samlUnencryptedResponseXML);
+
+		}
+
+		return responseSAMLBean;
+	}
+
+
+	/**
+	 * Método para rellenar el bean de respuesta, iterrando sobre los atributos que debe devolver el token
+	 * y buscandole en el mismo
+	 * @param authnResponse
+	 * @return
+	 */
+	private ResponseSAMLBean rellenaRespuestaSaml(IAuthenticationResponse authnResponse) {
+
+		ResponseSAMLBean responseSAMLBean = new ResponseSAMLBean();
+		responseSAMLBean.setLevelOfAssurance(authnResponse.getLevelOfAssurance());
+		ImmutableMap<AttributeDefinition<?>, ImmutableSet<? extends AttributeValue<?>>> attrMap = authnResponse.getAttributes().getAttributeMap();
+		// Itero sobre los atributos que debe devolver el token y lo busco en el token SAML
+		ImmutableSet<AttributeDefinition<?>> definition = attrMap.keySet();
+		Iterator<AttributeDefinition<?>> it = definition.iterator();
+		while (it.hasNext()) {
+			AttributeDefinition<?> attr = it.next();
+			getAttributteResponseSaml(attr, attrMap, responseSAMLBean);
+
+		}
+
+		return responseSAMLBean;
+	}
+
+
+	/**
+	 * @param attr
+	 * @param attrMap
+	 * @param responseSAMLBean
+	 */
+	private void getAttributteResponseSaml(AttributeDefinition<?> attr, 
+			ImmutableMap<AttributeDefinition<?>, ImmutableSet<? extends AttributeValue<?>>> attrMap,
+			ResponseSAMLBean responseSAMLBean) {
+		// Obtenemos el número del documento de la persona autenticada
+		if (ConstantesSP.PARAM_EIDAS_SAML_PERSONIDENTIFIER.equals(attr.getNameUri().toString()) && attrMap.get(attr) != null) {
+
+			String numIdentificacion = getAttributeValue(attr, attrMap);
+			if (numIdentificacion != null) {
+				int i = numIdentificacion.lastIndexOf('/');
+				if (i != -1) {
+					numIdentificacion = numIdentificacion.substring(i+1);
+				}
+				responseSAMLBean.setNumIdentificativo(numIdentificacion);
+			}
+
+		}
+
+		// Obtenemos el Nombre de la persona autenticada
+		if (ConstantesSP.PARAM_EIDAS_SAML_CURRENTFAMILYNAME.equals(attr.getNameUri().toString()) && attrMap.get(attr) != null) {
+
+			String value = getAttributeValue(attr, attrMap);
+			if (value != null) {
+				responseSAMLBean.setApellidos(value);
+			}
+
+		}
+
+		// Obtenemos los apellidos de la persona autenticada
+		if (ConstantesSP.PARAM_EIDAS_SAML_CURRENTGIVENNAME.equals(attr.getNameUri().toString()) && attrMap.get(attr) != null) {
+
+			String value = getAttributeValue(attr, attrMap);
+			if (value != null) {
+				responseSAMLBean.setNombre(value);
+			}
+
+		}
+
+		// Obtenemos el pais de nacimiento de la persona autenticada
+		if (ConstantesSP.PARAM_EIDAS_SAML_PLACEOFBIRTH.equals(attr.getNameUri().toString()) && attrMap.get(attr) != null) {
+
+			String value = getAttributeValue(attr, attrMap);
+			if (value != null) {
+				responseSAMLBean.setCodPais(value);
+			}
+
+		}
+
+		// Obtenemos el tipo de documento de la persona autenticada
+		if (ConstantesSP.PARAM_EIDAS_SAML_TIPODOCUMENTO.equals(attr.getNameUri().toString()) && attrMap.get(attr) != null) {
+
+			String value = getAttributeValue(attr, attrMap);
+			if (value != null) {
+				responseSAMLBean.setTipoDocumento(value);
+			}
+
+		}
+
+		// Obtenemos el CodTramite
+		if (ConstantesSP.PARAM_EIDAS_SAML_CODTRAMITE.equals(attr.getNameUri().toString()) && attrMap.get(attr) != null) {
+
+			String value = getAttributeValue(attr, attrMap);
+			if (value != null) {
+				responseSAMLBean.setCodTramite(value);
+			}
+
+		}
+	}
+
+
+	/**
+	 * @param attr
+	 * @param attrMap
+	 * @return
+	 */
+	private String getAttributeValue(AttributeDefinition<?> attr, 
+			ImmutableMap<AttributeDefinition<?>, ImmutableSet<? extends AttributeValue<?>>> attrMap) {
+		String value = null;
+		ImmutableSet<? extends AttributeValue<?>> values = attrMap.get(attr);
+		List<AttributeValue<?>> attrValueList = new ArrayList<>(values);
+		if (attrValueList.size() == 1) {
+			value = (String)attrValueList.get(0).getValue();
+		}
+
+		return value;
+	}
+
+	/**
+	 * @param responseBytes
+	 * @param engine
+	 * @return
+	 * @throws EIDASSAMLEngineException
+	 */
+	private byte[] checkAndDecryptResponse(byte[] responseBytes, ProtocolEngineI engine) throws EIDASSAMLEngineException {
+		// This decrypts the given responseBytes:
+		CorrelatedResponse response = (CorrelatedResponse) engine.unmarshallResponse(responseBytes);
+
+		try {
+			// re-transform the decrypted bytes to another byte array, without signing:
+			return marshall(response.getResponse());
+		} catch (EIDASSAMLEngineException e) {
+			LOGGER.debug(AbstractProtocolEngine.SAML_EXCHANGE, "BUSINESS EXCEPTION : checkAndResignEIDASTokenSAML : Sign and Marshall.", e);
+			LOGGER.info(AbstractProtocolEngine.SAML_EXCHANGE, "BUSINESS EXCEPTION : checkAndResignEIDASTokenSAML : Sign and Marshall.",
+					e.getMessage());
+			throw new EIDASSAMLEngineException(EidasErrorKey.INTERNAL_ERROR.errorCode(),
+					EidasErrorKey.INTERNAL_ERROR.errorMessage(), e);
+		}
+	}
+
+	/**
+	 * Method that transform the received SAML object into a byte array representation.
+	 *
+	 * @param samlToken the SAML token.
+	 * @return the byte[] of the SAML token.
+	 * @throws EIDASSAMLEngineException the SAML engine exception
+	 */
+	private byte[] marshall(XMLObject samlToken) throws EIDASSAMLEngineException {
+		try {
+			return OpenSamlHelper.marshall(samlToken);
+		} catch (MarshallException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new EIDASSAMLEngineException(e);
+		}
+	}
+
+
+	/**
+	 * Crear usuario.
+	 * @param respuesta
+	 * @return
+	 */
+	private UsuarioAutenticado crearUsuario(ResponseSAMLBean respuesta) {
+		final Collection<GrantedAuthority> result = new ArrayList<>();
+		result.add(new SimpleGrantedAuthority("ROLE_USER"));
+		return new UsuarioAutenticado(respuesta.getNumIdentificativo(), respuesta.getNombreCompleto(), respuesta.getCodPais(), respuesta.getTipoDocumento(),
+				respuesta.getSamlResponse(), result);
+	}
+
+
+	@Override
+	protected Logger getLogger() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+}

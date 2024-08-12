@@ -1,0 +1,147 @@
+.div-Boton-ancho {
+	text-align: right;
+	width: 250px;
+}
+
+.Boton-fondo-blanco, .Boton-fondo-blanco:focus, .Boton-fondo-blanco:hover {
+	background-color: #FFF;
+	color: #007DBC;
+
+	/*box-shadow: 2px 2px 5px #fc894d; border-color: #E8E8E8;*/
+    border-right: #007DBC 1px solid;
+	border-top: #007DBC 1px solid;
+	border-left: #007DBC 1px solid;
+	border-bottom: #007DBC 1px solid;
+	/*
+	line-style:solid;
+	*/
+}
+
+.Boton-fondo-verde, .Boton-fondo-verde:focus, .Boton-fondo-verde:hover {
+	background-color: #5CB85C;
+}
+
+.literal-Campo, .dataTable-Campo {
+	font-family: Open Sans,Verdana,Helvetica,sans-serif;
+	font-size: 14px;
+}
+
+.literalHeight-Campo {
+	font-family: Open Sans,Verdana,Helvetica,sans-serif;
+	font-size: 14px;
+	display: inline-block;
+	height: 20px;
+}
+
+.literalBold-Campo {
+	font-family: "Open Sans", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #555555;
+}
+
+.campoAltura {
+	height: 30px;
+}
+
+.h1Titulo {
+	text-align: left;
+}
+
+.spDesc {
+	float: left;
+}
+
+a {
+	color: #007DBC;
+	font-size: 14px;
+}
+
+.fsDetalle {
+	border: 1px solid #dddddd;
+	border-radius: 3px;
+	/*
+    display: block;
+    margin-inline-start: 2px;
+    margin-inline-end: 2px;
+    padding-block-start: 0.35em;
+    padding-inline-start: 0.75em;
+    padding-inline-end: 0.75em;
+    padding-block-end: 0.625em;
+    min-inline-size: min-content;
+    */
+}
+
+.fsDetalleSub {
+	border: 1px solid #dddddd;
+	border-radius: 3px;
+	margin: 15px;
+}
+
+.lgDetalle {
+	color: #444444;
+	border: 0px;	
+	width: auto;
+	margin: 10px;
+	text-align: left;
+}
+
+
+
+.fldTxtArea {
+	height: 100px;
+	width: 99%;
+	border-radius: 5px;
+}
+
+.fldTxt180 {
+	width: 180px;
+}
+
+.fldTxt300 {
+	width: 300px;
+}
+
+.fldTxt400 {
+	width: 400px;
+}
+
+.fldFecha {
+	width: 130px;
+}
+
+.fldImporte {
+	width: 110px;
+	text-align: right;
+}
+
+.fldRadioButton {
+	font-weight:normal;
+}
+
+.thSorting {
+	color: #444444;
+	border: 0px;	
+	width: auto;
+	margin: 10px;
+	text-align: left;
+	/*font-family: "Open Sans", Arial, Helvetica, sans-serif;*/
+}
+
+.tAcciones {
+	width: 100%;
+}
+
+.tAcciones td {
+	padding: 0 15px 5px 0;
+	font-size: 14px;
+}
+
+.trAccionTitulo {
+	background-color: grey;
+}
+
+.spAccionPago {
+	text-align: left;
+	width: 98%;
+}

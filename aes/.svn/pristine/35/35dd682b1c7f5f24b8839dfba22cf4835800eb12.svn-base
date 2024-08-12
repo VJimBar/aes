@@ -1,0 +1,10 @@
+#url base de la aplicacion, para generar enlaces
+miaesa.url.base=https://presede.seguridadaerea.gob.es/miaesa
+#Ruta de la carpeta de condenido json
+miaesa.json.content.folder=../conf/miaesa/content/json/
+#Ruta de la carpeta de condenido html
+miaesa.html.content.folder=../conf/miaesa/content/html/
+#URL base en la que estaran publicados los servicios internos (miaesa-ws)
+servicios.internos.url.base=https://presede.seguridadaerea.gob.es/miaesa-ws/api
+
+logging.level.root=INFO

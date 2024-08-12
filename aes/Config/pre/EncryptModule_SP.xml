@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+    <comment>SWModule encrypt with JKS.</comment>
+    <entry key="check_certificate_validity_period">false</entry>
+    <entry key="disallow_self_signed_certificate">false</entry>
+    <entry key="response.encryption.mandatory">true</entry>
+
+    <!-- Data Encryption algorithm -->
+    <entry key="data.encryption.algorithm">http://www.w3.org/2009/xmlenc11#aes256-gcm</entry>
+
+    <!-- Decryption algorithm Whitelist-->
+    <entry key="encryption.algorithm.whitelist">
+        http://www.w3.org/2009/xmlenc11#aes128-gcm;
+        http://www.w3.org/2009/xmlenc11#aes256-gcm;
+        http://www.w3.org/2009/xmlenc11#aes192-gcm
+    </entry>
+
+    <!-- Key Encryption algorithm -->
+        <!-- Key Encryption algorithm -->
+    <entry key="key.encryption.algorithm">http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p</entry>
+
+    <!-- Key store configuration -->
+    <entry key="keyStorePath">/keystore/KeyStore.jks</entry>
+    <entry key="keyStorePassword">DF787RTSS</entry>
+    <entry key="keyPassword">a_Esa90</entry>
+    <entry key="keyStoreType">JKS</entry>
+
+    <!-- Management of the encryption activation se borra este fichero de la ruta -->
+    <!-- <entry key="encryptionActivation">encryptionConf.xml</entry> -->
+
+    <!--  If not present then no encryption will be applied on response -->
+    <entry key="responseDecryptionIssuer">CN=AC Sector Público,2.5.4.97=#0C0F56415445532D51323832363030344A,OU=Ceres,O=FNMT-RCM,C=ES</entry>
+    <entry key="serialNumber">5E82F56ACA92FA8A61530B8515F18E2D</entry>
+  
+   
+</properties>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+    <comment>SWModule sign with JKS.</comment>
+    <!-- Certificates -->
+    <entry key="check_certificate_validity_period">true</entry>
+    <entry key="disallow_self_signed_certificate">false</entry>
+
+    <!-- signing Algorithm SHA_512(default),SHA_384,SHA_256 -->
+    <!-- http://www.w3.org/2001/04/xmldsig-more#rsa-sha256 -->
+    <!-- http://www.w3.org/2001/04/xmldsig-more#rsa-sha384 -->
+    <!-- http://www.w3.org/2001/04/xmldsig-more#rsa-sha512 -->
+
+    <entry key="signature.algorithm">http://www.w3.org/2001/04/xmldsig-more#rsa-sha512</entry>
+
+    <!-- List of incoming Signature algorithms white list separated by ; (default all)
+         http://www.w3.org/2001/04/xmldsig-more#rsa-sha256;
+         http://www.w3.org/2001/04/xmldsig-more#rsa-sha384;
+         http://www.w3.org/2001/04/xmldsig-more#rsa-sha512;
+         http://www.w3.org/2001/04/xmldsig-more#rsa-ripemd160;
+         http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256;
+         http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384;
+         http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512 -->
+
+    <entry key="signature.algorithm.whitelist">
+        http://www.w3.org/2001/04/xmldsig-more#rsa-sha256;
+        http://www.w3.org/2001/04/xmldsig-more#rsa-sha384;
+        http://www.w3.org/2001/04/xmldsig-more#rsa-sha512;
+        http://www.w3.org/2001/04/xmldsig-more#rsa-ripemd160;
+        http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256;
+        http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384;
+        http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512;
+        http://www.w3.org/2007/05/xmldsig-more#sha256-rsa-MGF1
+    </entry>
+
+
+    <!--original-->
+    <!-- signing response assertion true/false (default false) -->
+<!--
+    <entry key="response.sign.assertions">false</entry>
+
+    <entry key="keystorePath">../../keystore/keystore_pre.jks</entry>
+    <entry key="keyStorePassword">Bb85Rf7es</entry>
+    <entry key="keystoreType">JKS</entry>
+-->
+
+    <!-- keystore y certificados actual 07012020 -->
+    <!-- <entry key="keyPassword">aesa</entry> -->
+    <!-- <entry key="issuer">CN=AC Administración Pública,SERIALNUMBER=Q2826004J,OU=CERES,O=FNMT-RCM,C=ES</entry>	 -->
+    <!-- <entry key="serialNumber">2F1207487339CA99589DA976CD406FF7</entry> -->
+
+
+    <!-- keystore y certificados nuevo 07012020 (el mismo de Claves Concertadas)  
+	     tb está importado en el keystore_pre.jks -->
+<!--
+    <entry key="keyPassword">WVQqu7h2a2GGZEPX</entry>
+    <entry key="issuer">CN=AC Administración Pública,SERIALNUMBER=Q2826004J,OU=CERES,O=FNMT-RCM,C=ES</entry>
+    <entry key="serialNumber">63BA90687C6757C5A8FFDD412656BF0</entry>
+-->
+
+    <entry key="response.sign.assertions">false</entry>
+	<entry key="keyStorePath">/keystore/eIDASNODE.JKS</entry>
+	<entry key="keyStorePassword">iLwraRa7Vktk</entry>
+
+    <entry key="keyPassword">iLwraRa7Vktk</entry>
+    
+	<entry key="issuer">CN=AC Sector Público,2.5.4.97=#0C0F56415445532D51323832363030344A,OU=Ceres,O=FNMT-RCM,C=ES</entry>
+    <entry key="serialNumber">5E82F56ACA92FA8A61530B8515F18E2D</entry>
+	<entry key="keyStoreType">JKS</entry>
+
+</properties>

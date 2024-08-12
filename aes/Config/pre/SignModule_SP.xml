@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+    <comment>SWModule sign with JKS.</comment>
+    <!-- Certificates -->
+    <entry key="check_certificate_validity_period">true</entry>
+    <entry key="disallow_self_signed_certificate">false</entry>
+
+    <!-- signing Algorithm SHA_512(default),SHA_384,SHA_256 -->
+    <!-- http://www.w3.org/2001/04/xmldsig-more#rsa-sha256 -->
+    <!-- http://www.w3.org/2001/04/xmldsig-more#rsa-sha384 -->
+    <!-- http://www.w3.org/2001/04/xmldsig-more#rsa-sha512 -->
+
+    <entry key="signature.algorithm">http://www.w3.org/2001/04/xmldsig-more#rsa-sha512</entry>
+
+    <!-- List of incoming Signature algorithms white list separated by ; (default all)
+         http://www.w3.org/2001/04/xmldsig-more#rsa-sha256;
+         http://www.w3.org/2001/04/xmldsig-more#rsa-sha384;
+         http://www.w3.org/2001/04/xmldsig-more#rsa-sha512;
+         http://www.w3.org/2001/04/xmldsig-more#rsa-ripemd160;
+         http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256;
+         http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384;
+         http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512 -->
+
+    <entry key="signature.algorithm.whitelist">
+        http://www.w3.org/2001/04/xmldsig-more#rsa-sha256;
+        http://www.w3.org/2001/04/xmldsig-more#rsa-sha384;
+        http://www.w3.org/2001/04/xmldsig-more#rsa-sha512;
+        http://www.w3.org/2001/04/xmldsig-more#rsa-ripemd160;
+        http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256;
+        http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384;
+        http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512;
+        http://www.w3.org/2007/05/xmldsig-more#sha256-rsa-MGF1
+    </entry>
+    <!-- signing response assertion true/false (default false) -->
+	<entry key="response.sign.assertions">false</entry>
+	<entry key="keyStorePath">/keystore/KeyStore.jks</entry>
+	<entry key="keyStorePassword">DF787RTSS</entry>
+	<entry key="keyPassword">a_Esa90</entry>
+	<entry key="issuer">CN=AC Sector Público,2.5.4.97=#0C0F56415445532D51323832363030344A,OU=Ceres,O=FNMT-RCM,C=ES</entry>
+    <entry key="serialNumber">5E82F56ACA92FA8A61530B8515F18E2D</entry>
+	<entry key="keyStoreType">JKS</entry>
+	
+	<!-- Metadata signature configuration -->
+	<entry key="metadata.keyStorePath">/keystore/KeyStore.jks</entry>
+	<entry key="metadata.keyStorePassword">DF787RTSS</entry>
+	<entry key="metadata.keyPassword">a_Esa90</entry>
+	<entry key="metadata.issuer">CN=AC Sector Público,2.5.4.97=#0C0F56415445532D51323832363030344A,OU=Ceres,O=FNMT-RCM,C=ES</entry>
+    <entry key="metadata.serialNumber">5E82F56ACA92FA8A61530B8515F18E2D</entry>
+	<entry key="metadata.keyStoreType">JKS</entry>
+
+</properties>

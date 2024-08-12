@@ -1,0 +1,82 @@
+package es.e4f.bean.security;
+
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+
+
+
+public class UsuarioAutenticado implements UserDetails {
+
+	private static final long serialVersionUID = 5376447815581244249L;
+	
+	private final String username;
+	private final String nombre;
+	private final String codPais;
+	private final String tipoDoc;
+	private final String samlResponse;
+	private final Collection<? extends GrantedAuthority> authorities;
+
+	public UsuarioAutenticado(String username, String nombre, String codPais, String tipoDoc, String samlResponse, Collection<? extends GrantedAuthority> authorities) {
+		this.username = username;
+		this.nombre = nombre;
+		this.codPais = codPais;
+		this.tipoDoc = tipoDoc;
+		this.samlResponse = samlResponse;
+		this.authorities = authorities;
+	}
+
+	
+	public String getNombre() {
+		return nombre;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	public boolean isEnabled() {
+		return true;
+	}
+
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	public String getPassword() {
+		return null;
+	}
+
+
+	public String getSamlResponse() {
+		return samlResponse;
+	}
+
+
+	public String getCodPais() {
+		return codPais;
+	}
+
+
+	public String getTipoDoc() {
+		return tipoDoc;
+	}
+
+	
+	
+
+}

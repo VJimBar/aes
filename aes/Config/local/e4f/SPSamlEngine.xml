@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instances>
+
+    <!-- ******************** SP ******************** -->
+    <!-- Configuration name-->
+    <instance name="LOGIN_MIAESA">
+	
+	<!-- Este es el nombre del motor a instanciar en la operación del Login. Por ejemplo: public static final String LOGIN_SAMLENGINE_NAME="LOGIN_MIAESA"; -->
+	
+        <!-- Configurations parameters ProtocolEngine  -->
+        <configuration name="SamlEngineConf">
+            <parameter name="fileConfiguration" value="SamlEngine_SP.xml"/>
+        </configuration>
+
+        <!-- Settings module signature-->
+        <configuration name="SignatureConf">
+            <!-- Specific signature module -->
+            <parameter name="class" value="eu.eidas.auth.engine.core.impl.SignSW"/>
+            <!-- Settings specific module -->
+            <parameter name="fileConfiguration" value="SignModule_SP.xml"/>
+        </configuration>
+
+        <!-- Settings module encryption -->
+        <configuration name="EncryptionConf">
+            <!-- Specific signature module -->
+            <parameter name="class"
+                       value="eu.eidas.auth.engine.core.impl.EncryptionSW"/>
+            <!-- Settings specific module
+                 responseTo/FromPointAlias & requestTo/FromPointAlias parameters will be added -->
+            <parameter name="fileConfiguration" value="EncryptModule_SP.xml"/>
+        </configuration>
+
+        <!-- Settings for the ExtensionProcessor module -->
+        <configuration name="ProtocolProcessorConf">
+            <!-- Specific ExtensionProcessor module -->
+            <parameter name="class"
+                       value="eu.eidas.auth.engine.core.eidas.EidasProtocolProcessor"/>
+            <parameter name="coreAttributeRegistryFile"
+                       value="saml-engine-eidas-attributes.xml" />
+            <!--<parameter name="additionalAttributeRegistryFile" value="saml-engine-additional-attributes.xml" /> línea que estaba comentada-->
+			
+			<!-- Esta clase se deberá generar para el proyecto de integración miAESA con Claves Concertadas(con la petición se adjuntan los fuentes originales)-->
+           <parameter name="metadataFetcherClass" value="es.aesa.miaesa.servicios.externos.e4f.SPCachingMetadataFetcher"/>
+        </configuration>
+		
+        <!-- Settings for the Clock module -->
+        <configuration name="ClockConf">
+            <!-- Specific Clock module -->
+            <parameter name="class"
+                       value="eu.eidas.auth.engine.SamlEngineSystemClock"/>
+        </configuration>
+    </instance>
+	
+	
+	 <instance name="FIRMA_MIAESA">
+	 
+	 <!-- Este es el nombre del motor a instanciar en la operación de Firma. Por ejemplo: public static final String FIRMA_SAMLENGINE_NAME="FIRMA_MIAESA"; -->
+	 
+	 
+        <!-- Configurations parameters ProtocolEngine  -->
+        <configuration name="SamlEngineConf">
+            <parameter name="fileConfiguration" value="SamlEngine_SP.xml"/>
+        </configuration>
+
+        <!-- Settings module signature-->
+        <configuration name="SignatureConf">
+            <!-- Specific signature module -->
+            <parameter name="class" value="eu.eidas.auth.engine.core.impl.SignSW"/>
+            <!-- Settings specific module -->
+            <parameter name="fileConfiguration" value="SignModule_SP.xml"/>
+        </configuration>
+
+        <!-- Settings module encryption -->
+        <configuration name="EncryptionConf">
+            <!-- Specific signature module -->
+            <parameter name="class"
+                       value="eu.eidas.auth.engine.core.impl.EncryptionSW"/>
+            <!-- Settings specific module
+                 responseTo/FromPointAlias & requestTo/FromPointAlias parameters will be added -->
+            <parameter name="fileConfiguration" value="EncryptModule_SP.xml"/>
+        </configuration>
+
+        <!-- Settings for the ExtensionProcessor module -->
+        <configuration name="ProtocolProcessorConf">
+            <!-- Specific ExtensionProcessor module -->
+            <parameter name="class"
+                       value="eu.eidas.auth.engine.core.eidas.EidasProtocolProcessor"/>
+            <parameter name="coreAttributeRegistryFile"
+                       value="saml-engine-eidas-attributes.xml" />
+            <parameter name="additionalAttributeRegistryFile"
+                       value="saml-engine-additional-attributes.xml" />
+					   
+			<!-- Esta clase se deberá generar para el proyecto de integración miAESA con Claves Concertadas(con la petición se adjuntan los fuentes originales)-->
+            <!-- <parameter name="metadataFetcherClass" value="es.safcce.web.internet.controller.sp.metadata.SPCachingMetadataFetcher"/>--> 	
+			<parameter name="metadataFetcherClass" value="es.aesa.miaesa.servicios.externos.e4f.SPCachingMetadataFetcher"/>
+			
+        </configuration>
+		
+        <!-- Settings for the Clock module -->
+        <configuration name="ClockConf">
+            <!-- Specific Clock module -->
+            <parameter name="class"
+                       value="eu.eidas.auth.engine.SamlEngineSystemClock"/>
+        </configuration>
+    </instance>
+
+
+</instances>

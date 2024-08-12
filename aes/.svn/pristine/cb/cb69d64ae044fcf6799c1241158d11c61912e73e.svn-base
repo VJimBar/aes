@@ -1,0 +1,19 @@
+<%@page import="org.slf4j.LoggerFactory"%>
+<%@page import="java.net.URLEncoder"%>
+<%@page import="es.aesa.fire.expedientes.webapp.SignHelper"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Recuperar firma</title>
+</head>
+<body>
+	<%
+	     response.sendRedirect("https://aplicaciones-pre.aviacion.fomento.es/sancionadoresov/SancionesAESA/Tramitador/ExpSancOficinaVirtual.nsf/fPresentado?OpenForm&IDSOL=" + session.getAttribute("idSol") + "&IDGR=" + request.getAttribute("idAsiento"));
+	%>
+</body>
+</html>
+</html>

@@ -1,0 +1,78 @@
+.nav-right-menu{
+	  margin-top: 1%;
+}
+
+.navbar-inverse {
+  background-color: #00486f;
+  border-color: #004970;
+}
+.navbar-inverse .navbar-nav>li>a{
+  color: #ffffff;
+}
+.navbar.navbar-default.container-menu{
+	margin-bottom: 20px;
+}
+
+.container-menu {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.navbar-inverse {
+  background-color: #00486f;
+  border-color: #004970;
+}
+.navbar-inverse .navbar-nav>li>a {
+  color: #ffffff;
+}
+
+
+/*****************/
+/*CAMINO DE MIGAS*/
+/*****************/
+
+.alpha{
+	margin-left:0
+}
+
+.omega{
+	margin-right:0px
+}
+
+#caminoMigas {
+    background: #FFF;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+#caminoMigas span {
+    float : left;
+    font-size: 1rem; 
+}
+
+#caminoMigas ul li {
+    text-decoration: none;
+	color: #c35b17;
+	display: inline;
+	font-size: 1rem;
+}
+
+#caminoMigas ul li.primerElemento {
+    background : none;   
+}
+ 
+#caminoMigas ul li a {
+    color : #0645AD;
+    text-decoration : none;
+    font-size: 1rem;
+}
+
+#estaEn {
+	color: #555 !important;
+	font-weight: bold
+}
+
+#contenido {		
+  /*font-size: 0.85rem;*/
+  text-align: left;
+}

@@ -76,6 +76,8 @@ public class IndexAction extends AbstractSPServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("\n"+"------------> doGet IndexAction method");
+		
 		if (acceptsHttpRedirect()) {
 			Date date=new Date();
 			System.out.print(date + " Llamada al metodo index get"  + "\n");
@@ -99,7 +101,7 @@ public class IndexAction extends AbstractSPServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		System.out.println("doPost IndexAction method");
+		System.out.println("---------->doPost IndexAction method");
 		RequestDispatcher dispatcher = null;
 		
 		// The input data is parsed
@@ -248,6 +250,7 @@ public class IndexAction extends AbstractSPServlet {
      * @return a redirect method
      */
     public String getRedirectMethod() {
+    	System.out.println("---------->getRedirectMethod IndexAction method");
     	String ret = "post";
     	
     	if (configs.containsKey(Constants.REDIRECT_METHOD)) {

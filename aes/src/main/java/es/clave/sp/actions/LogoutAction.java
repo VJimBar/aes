@@ -50,6 +50,7 @@ public class LogoutAction extends AbstractSPServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("\n"+"------------> doGet Logout method");
 		if (acceptsHttpRedirect()) {
 			doPost(request, response);
 
@@ -70,7 +71,7 @@ public class LogoutAction extends AbstractSPServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		System.out.println("-->doPost LogoutAction method");
+		System.out.println("-------------->doPost LogoutAction method");
 		SAMLResponse = request.getParameter("SAMLResponse");
 		String relayState = request.getParameter("RelayState");
 		configs = SPUtil.loadSPConfigs();

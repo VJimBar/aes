@@ -121,7 +121,7 @@ public class SignatureService extends HttpServlet {
 		session.setAttribute("numExpediente", numExpediente); //$NON-NLS-1$
 		session.setAttribute("idSol", idSol); //$NON-NLS-1$
 		
-		Cookie sessionCookie=new Cookie("JSESSIONID", session.getId() );
+		Cookie sessionCookie=new Cookie("JSESSIONID", session.getId());
 		sessionCookie.setMaxAge(30*60);
 		
 		response.addCookie(sessionCookie);

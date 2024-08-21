@@ -42,6 +42,7 @@
 
 	<!--Subject cannot be confirmed on or after this seconds time (positive number)-->
 	<entry key="timeNotOnOrAfter">300</entry>
+	
 
 	<!--Validation IP of the response-->
 	<entry key="ipAddrValidation">false</entry>

@@ -19,7 +19,8 @@ import es.clave.sp.SPUtil;
 import eu.eidas.auth.commons.EidasParameterKeys;
 
 /**
- *  This Action Generates a SAML Request with the data given by the user, then sends it to the selected node
+ * This Action Generates a SAML Request with the data given by the user, then
+ * sends it to the selected node
  */
 public class PopulateAction extends AbstractSPServlet {
 
@@ -39,7 +40,7 @@ public class PopulateAction extends AbstractSPServlet {
 		providerName = configs.getProperty(Constants.PROVIDER_NAME);
 		spApplication = configs.getProperty(Constants.SP_APLICATION);
 		returnUrl = configs.getProperty(Constants.SP_RETURN);
-	}    
+	}
 
 	@Override
 	protected Logger getLogger() {
@@ -49,6 +50,10 @@ public class PopulateAction extends AbstractSPServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		System.out.println("\n" + "--> en el metodo doGet de PopulateAction");
+		System.out.println("session id: " + session.getId());
+		System.out.println("samlId " + (String) session.getAttribute("samlId"));
 		doPost(request, response);
 	}
 
@@ -60,64 +65,49 @@ public class PopulateAction extends AbstractSPServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("--->doPost PopulateAction method");
-		PopulateAction.loadGlobalConfig();
-
-		Date date=new Date();
-		
+		System.out.println("\n" + "------------>doPost PopulateAction method");
 		HttpSession session = request.getSession();
 
-		if (session!=null){ 
-			
-			if((String) session.getAttribute("samlId")!= null) {
-				
-				System.out.println(date + " samlId: " + (String) session.getAttribute("samlId"));
-				
-				String samlId = (String) session.getAttribute("samlId"); //$NON-NLS-1$
-				String relayState = (String) session.getAttribute("RelayState"); //$NON-NLS-1$
-				String nodeServiceUrl = (String) session.getAttribute("nodeServiceUrl"); //$NON-NLS-1$
-				String binding = (String) session.getAttribute("binding"); //$NON-NLS-1$
-				String logoutRequest = (String) session.getAttribute("logoutRequest"); //$NON-NLS-1$
-				
-				request.setAttribute("samlId", samlId);
-				request.setAttribute("RelayState", relayState);
-				request.setAttribute("nodeServiceUrl", nodeServiceUrl);
-				request.setAttribute("binding", binding);
-				request.setAttribute("logoutRequest", logoutRequest);
-				
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/logout.jsp");
-				dispatcher.forward(request, response);
-			}
-			else 
-			{
-				System.out.println(date + " samlId2: " + (String) session.getAttribute("samlId"));
-				
-				request.setAttribute("providerName", providerName);
-				request.setAttribute("spApplication", spApplication);
-				request.setAttribute("returnUrl", returnUrl);
-				request.setAttribute("nodeServiceUrl", nodeServiceUrl);
-				request.setAttribute(EidasParameterKeys.BINDING.toString(), getRedirectMethod());	
-				
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/selectAttributes.jsp");
-				dispatcher.forward(request, response);
-			}
+		PopulateAction.loadGlobalConfig();
 
-		}
-		else 
-		{
+		Date date = new Date();
 
-			System.out.println(date + "samlId 3");
-			
+		RequestDispatcher dispatcher = null;
+		if ((String) session.getAttribute("samlId") != null) {
+			System.out.println("entra por el if");
+			System.out.println("session id: " + session.getId());
+			System.out.println(date + " samlId1:  " + (String) session.getAttribute("samlId"));
+
+			String samlId = (String) session.getAttribute("samlId"); //$NON-NLS-1$
+			String relayState = (String) session.getAttribute("RelayState"); //$NON-NLS-1$
+			String nodeServiceUrl = (String) session.getAttribute("nodeServiceUrl"); //$NON-NLS-1$
+			String binding = (String) session.getAttribute("binding"); //$NON-NLS-1$
+			String logoutRequest = (String) session.getAttribute("logoutRequest"); //$NON-NLS-1$
+
+			request.setAttribute("samlId", samlId);
+			request.setAttribute("RelayState", relayState);
+			request.setAttribute("nodeServiceUrl", nodeServiceUrl);
+			request.setAttribute("binding", binding);
+			request.setAttribute("logoutRequest", logoutRequest);
+
+			dispatcher = request.getRequestDispatcher("/logout.jsp");
+			dispatcher.forward(request, response);
+		} else {
+			System.out.println("entra por el else");
+			System.out.println("session id: " + session.getId());
+			System.out.println(date + " samlId2: " + (String) session.getAttribute("samlId"));
+
 			request.setAttribute("providerName", providerName);
 			request.setAttribute("spApplication", spApplication);
 			request.setAttribute("returnUrl", returnUrl);
 			request.setAttribute("nodeServiceUrl", nodeServiceUrl);
 			request.setAttribute(EidasParameterKeys.BINDING.toString(), getRedirectMethod());
-			
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/selectAttributes.jsp");
+
+			dispatcher = request.getRequestDispatcher("/selectAttributes.jsp");
 			dispatcher.forward(request, response);
 		}
 
@@ -131,14 +121,14 @@ public class PopulateAction extends AbstractSPServlet {
 		return returnUrl;
 	}
 
-	//    public void setReturnUrl(String url) {
-	//        returnUrl = url;
-	//    }
+	// public void setReturnUrl(String url) {
+	// returnUrl = url;
+	// }
 
 	/**
 	 * Method to be used by configuration. See sp.properties -> redirect.method key.
-	 *  This allows to be able to function eihter in
-	 * EIDAS or STORK mode respectively.
+	 * This allows to be able to function eihter in EIDAS or STORK mode
+	 * respectively.
 	 *
 	 * @return a redirect method
 	 */

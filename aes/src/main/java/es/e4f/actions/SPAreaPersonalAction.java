@@ -284,10 +284,10 @@ public class SPAreaPersonalAction extends AbstractSPServlet {
 			request.setAttribute("ID", clave);
 			
 			HttpSession session = request.getSession();
-			Cookie sessionCookie=new Cookie("JSESSIONID", session.getId() );
+			Cookie sessionCookie=new Cookie("JSESSIONID", session.getId());
 			sessionCookie.setMaxAge(30*60);
-			
 			response.addCookie(sessionCookie);
+			
 			session.setAttribute("autentication", request.getAttribute("autentication"));
 
 		} catch (ApplicationException | UnmarshallException e) {
